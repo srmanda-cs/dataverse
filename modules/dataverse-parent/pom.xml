@@ -175,7 +175,7 @@
         <smallrye-mpconfig.version>3.7.1</smallrye-mpconfig.version>
         <junit.jupiter.version>5.10.2</junit.jupiter.version>
         <mockito.version>5.11.0</mockito.version>
-        
+
         <checkstyle.version>9.3</checkstyle.version>
         
         <!-- Official Maven Plugins -->
@@ -201,16 +201,16 @@
         <pomchecker-maven-plugin.version>1.7.0</pomchecker-maven-plugin.version>
         <sonar.version>5.7.0.6970</sonar.version>
         <maven-jacoco-plugin.version>0.8.14</maven-jacoco-plugin.version>
-        
+
         <!-- Container related -->
         <fabric8-dmp.version>0.48.0</fabric8-dmp.version>
-        
+
         <!-- SonarQube Code Quality related -->
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.organization>iqss</sonar.organization>
         <sonar.projectKey>IQSS_dataverse</sonar.projectKey>
         <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
-        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>   
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
     </properties>
     
     <pluginRepositories>

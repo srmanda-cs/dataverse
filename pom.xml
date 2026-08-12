@@ -28,7 +28,7 @@
         
         <jacoco.merged.outputdir>${project.reporting.outputDirectory}/jacoco-merged-test-coverage-report</jacoco.merged.outputdir>
         <sonar.coverage.jacoco.xmlReportPaths>${jacoco.merged.outputdir}/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-        
+
         <!-- By default, this module will produce a WAR file. -->
         <!-- This will be switched within the container profile! -->
         <packaging.type>war</packaging.type>
@@ -476,6 +476,9 @@
             <version>${poi.version}</version>
         </dependency>
         <dependency>
+            <!-- jhove 1.34 currently includes an old version of apache commons-compress
+                 if we update, the commons-compress dependency below needs to go above this
+                 (or an exclude is needed) -->
             <groupId>org.openpreservation.jhove</groupId>
             <artifactId>jhove-core</artifactId>
             <version>${jhove.version}</version>
