@@ -79,16 +79,16 @@ jobs:
           
           cd modules/container-base
           
-          # Explicitly run the parse-version goal so the ${parsedVersion...} variables exist in memory
+          # Explicitly run the parse-version goal so the variables exist in memory
           BASE_IMAGE=$(mvn build-helper:parse-version help:evaluate -Dexpression=base.image -q -DforceStdout -Pct)
-          cd ../..
           
           echo "Target base image: $BASE_IMAGE"
           
           # 2. Safety catch: If it still has unresolved variables or is null, fallback to build
           if [[ "$BASE_IMAGE" == *"null object"* || "$BASE_IMAGE" == *"\${"* || -z "$BASE_IMAGE" ]]; then
             echo "⚠️ Could not evaluate the image tag cleanly. Building locally to be safe..."
-            mvn -Pct clean package -f modules/container-base/pom.xml
+            mvn -Pct build-helper:parse-version clean package
+            cd ../..
             exit 0
           fi
           
@@ -97,9 +97,12 @@ jobs:
           
           if docker pull "$BASE_IMAGE"; then
             echo "✅ Image found and pulled successfully! Skipping local build."
+            cd ../..
           else
-            echo "⚠️ Image not found remotely. Building it locally from modules/container-base..."
-            mvn -Pct clean package -f modules/container-base/pom.xml
+            echo "⚠️ Image not found remotely. Building it locally..."
+            # We explicitly add build-helper:parse-version here too!
+            mvn -Pct build-helper:parse-version clean package
+            cd ../..
           fi
         
       # ---------------------------
