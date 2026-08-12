@@ -71,14 +71,36 @@ jobs:
           mvn -version
 
       # ---------------------------
-      # BUILD THE BASE IMAGE FIRST
+      # FETCH OR BUILD BASE IMAGE
       # ---------------------------
-      - name: Build local base image
+      - name: Fetch or Build local base image
         run: |
           set -euo pipefail
-          echo "Building the base image module so it is cached locally..."
-          # Use -f to point directly to the module's pom.xml
-          mvn -Pct clean package -f modules/container-base/pom.xml
+          
+          cd modules/container-base
+          
+          # Explicitly run the parse-version goal so the ${parsedVersion...} variables exist in memory
+          BASE_IMAGE=$(mvn build-helper:parse-version help:evaluate -Dexpression=base.image -q -DforceStdout -Pct)
+          cd ../..
+          
+          echo "Target base image: $BASE_IMAGE"
+          
+          # 2. Safety catch: If it still has unresolved variables or is null, fallback to build
+          if [[ "$BASE_IMAGE" == *"null object"* || "$BASE_IMAGE" == *"\${"* || -z "$BASE_IMAGE" ]]; then
+            echo "⚠️ Could not evaluate the image tag cleanly. Building locally to be safe..."
+            mvn -Pct clean package -f modules/container-base/pom.xml
+            exit 0
+          fi
+          
+          # 3. Try to pull the image from the registry
+          echo "Pinging registry for $BASE_IMAGE..."
+          
+          if docker pull "$BASE_IMAGE"; then
+            echo "✅ Image found and pulled successfully! Skipping local build."
+          else
+            echo "⚠️ Image not found remotely. Building it locally from modules/container-base..."
+            mvn -Pct clean package -f modules/container-base/pom.xml
+          fi
         
       # ---------------------------
       # BUILD IMAGES (Dataverse-native)
